@@ -513,7 +513,29 @@ class Ads_content_model extends MY_Model {
         );
         $this->db->insert('systemlogs', $data);
     }
-
+    /*
+    vunt
+    begin------------------------------------------------------------------
+    */
+    public function list_clip_bydate($fromdate, $todate)
+    {
+        $list_clip = array();
+        
+         $sql = "SELECT dpd.clipid,  dpd.busline,  dpd.frame,  dpd.duration, dpd.times, dpd.total_duration, dpd.date,
+                    ac.filename,ac.unique_name,ac.filepath,ac.checksum,ac.rawSeconds
+                FROM ads_active aa
+                INNER JOIN duration_play_day dpd ON aa.clipid = dpd.clipid
+                INNER JOIN ads_clips ac ON ac.clipid = aa.clipid
+                WHERE aa.admin = 1 AND aa.manager = 1 AND aa.customer = 1 AND aa.system = 1
+                    and dpd.date between ? and ? 
+                ORDER BY dpd.date asc,dpd.frame asc";
+        return $this->db->query($sql, array($fromdate, $todate))->result_array();
+        
+       
+    }
+    /*
+    ----------------------------------------------------------------------------
+    */
     private function show_debug_info($data)
     {
         ob_start();
@@ -559,5 +581,6 @@ class Ads_content_model extends MY_Model {
         }
         return $html;
     }
+    
 }
 ?>

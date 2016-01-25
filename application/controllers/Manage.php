@@ -330,5 +330,50 @@ class Manage extends MY_Controller {
             echo '<script type="text/javascript">alert("'.$msg.'");</script>';
         }
     }
-
+    public function clipbydate(){
+            $start = $this->input->post('start');
+            $end = $this->input->post('end');
+            $data['user_info'] = $this->User_model->get_user_info($this->auth_user_name);
+            $this->load->model('ads_content_model');
+            $list_clip = $this->ads_content_model->list_clip_bydate($start, $end);
+           
+        
+            
+            $slottime = 0;
+            $frame = -1;
+            $result;
+            if($list_clip == null) {
+                echo "[]";exit();
+            }
+            foreach($list_clip as  $key=>$value){
+                //print_r($value);
+                if($value['frame'] != $frame){
+                    $slottime = 0;
+                    $frame = $value['frame'];
+                }
+                $dateInit = date_parse($value['date']." ".$value['frame'].":00:00");
+                //var_dump($dateInit);
+                $dateinsec=strtotime($value['date']." ".$value['frame'].":00:00");
+                $startdate=$dateinsec+$slottime;
+                //echo date('Y-d-m H:i:s',$startdate);
+                
+                $enddate=$startdate+$value['total_duration'];
+                
+                //echo date('Y-d-m H:i:s',$enddate);
+                
+                $dateSub = $enddate -$dateinsec ;
+                
+                
+                $item = array("title"=> $value['filename'],"id"=> $value['clipid'],"start"=> date('Y-m-d H:i:s',$startdate), "end"=>  date('Y-m-d H:i:s',$enddate),"unique_name"=>$value['unique_name'],"borderColor" => "#ccc", "backgroundColor"=> ($dateSub > 3600  ? "red" : "yellows"));
+                
+                
+                $slottime +=$value['total_duration'];
+                //print_r($item);
+                $result[] = $item;
+            }
+           //print_r($result);
+            echo json_encode($result);
+            exit();
+          
+        }
 }

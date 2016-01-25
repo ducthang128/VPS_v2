@@ -205,6 +205,7 @@
 <!-- Calendar -->
 <script src="/bes/manage/dist/js/moment.min.js"></script>
 <script src="/bes/manage/dist/js/fullcalendar.min.js"></script>
+<script src="/bes/manage/dist/js/lang-all.js"></script>
 <script>
   $(function () {
 
@@ -241,7 +242,7 @@
     var d = date.getDate(),
         m = date.getMonth(),
         y = date.getFullYear();
-    $('#calendar').fullCalendar({
+   /* $('#calendar').fullCalendar({
       header: {
         left: 'prev,next today',
         center: 'title',
@@ -374,7 +375,53 @@
 
       }
     });
+*/
 
+     $('#calendar').fullCalendar({
+			header: {
+			    left: 'prev,next today',
+			    center: 'title',
+			    right: 'agendaWeek,agendaDay'
+		    },
+		    defaultDate: new Date(),
+		    editable: false,
+		    slotDuration: '00:02:00',
+		    scrollTime: new Date(),
+		    defaultView: 'agendaDay',
+		    lang: 'vi',
+		    eventLimit: true, // allow "more" link when too many events
+			 eventSources: [
+
+            // your event source
+            {
+                url: '/manage/clipbydate',
+                type: 'POST',
+                
+                error: function() {
+                    alert('there was an error while fetching events!');
+                },
+                color: 'yellow',   // a non-ajax option
+                textColor: 'black' // a non-ajax option
+            }
+
+        // any other sources...
+
+            ],loading: function (bool) {
+               //alert('events are being rendered'); // Add your script to show loading
+            },
+            eventAfterAllRender: function (view) {
+               // alert('all events are rendered'); // remove your loading 
+            },
+            eventRender: function (event, element) {
+                //element.attr('href', "javascript:html5Lightbox.showLightbox(2, '/adsclips/dBz9aSlMTjRGK5ZC.mp4', 'Gioi thieu SAMCO CITY CNG - 00:02:01.6', 720, 405, '/adsclips/dBz9aSlMTjRGK5ZC.mp4');");
+            },
+            eventClick: function(event) {
+                if (event.id) {
+                    html5Lightbox.showLightbox(2, '/adsclips/'+event.unique_name, event.title, 720, 405, '/adsclips/'+event.unique_name);
+                    return false;
+                }
+            }
+		});   
     /* ADDING EVENTS */
     var currColor = "#3c8dbc"; //Red by default
     //Color chooser button
